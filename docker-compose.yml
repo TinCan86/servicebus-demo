@@ -1,0 +1,29 @@
+version: "3.4"
+services:
+  plus_four_service:
+    container_name: plus_four_service
+    build:
+      context: PlusFourService
+      dockerfile: Dockerfile
+  report_back_service:
+    container_name: report_back_service
+    build:
+      context: ReportBackService
+      dockerfile: Dockerfile
+    depends_on:
+      - functions
+  plus_four_api_demo:
+    container_name: plus_four_api_demo
+    build:
+      context: PlusFourAPIDemo
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+      - 5001:5001
+  functions:
+    container_name: functions
+    ports:
+      - 8090:80
+    build:
+      context: CallbackFunc
+      dockerfile: Dockerfile
