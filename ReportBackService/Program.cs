@@ -21,7 +21,6 @@ namespace FirstApp.PlusFourService
             listenToMessages();
         }
 
-
         static void listenToMessages()
         {
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
