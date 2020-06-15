@@ -18,7 +18,11 @@ namespace FirstApp.PlusFourService
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             // Recieve Message from ServiceBus
-            listenToMessages();
+            var messageHandlerOptions = new MessageHandlerOptions(OnException);
+            queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
+            Console.ReadKey();
+            // await listenToMessages();
+
         }
 
         static async Task createMessages(int num)
@@ -35,11 +39,13 @@ namespace FirstApp.PlusFourService
             Console.WriteLine("Sent message");
         }
 
-        static void listenToMessages()
-        {
-            var messageHandlerOptions = new MessageHandlerOptions(OnException);
-            queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
-        }
+        // static async Task listenToMessages()
+        // {
+        //     var messageHandlerOptions = new MessageHandlerOptions(OnException);
+        //     queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
+
+        //     await Task.CompletedTask;
+        // }
 
         static async Task OnMessage(Message m, CancellationToken ct)
         {
@@ -48,18 +54,18 @@ namespace FirstApp.PlusFourService
             Console.WriteLine(messageText);
             Console.WriteLine($"Enqueued at {m.SystemProperties.EnqueuedTimeUtc}");
 
-            const string ServiceBusConnectionStringToCallbackBus = "Endpoint=sb://workshop-test.servicebus.windows.net/;SharedAccessKeyName=Admin;SharedAccessKey=8ZCc0FfKjz9tjj42RFO1NoJmwHvj55tDn/dbMmqAylQ=";
-            const string QueueNameToCallbackBus = "newmessagequeue";
-            // Skickar ett meddelande till servicebus queue - Skapa ny connection 
-            var queueClientToCallbackBus = new QueueClient(ServiceBusConnectionStringToCallbackBus, QueueNameToCallbackBus);
+            // const string ServiceBusConnectionStringToCallbackBus = "Endpoint=sb://workshop-test.servicebus.windows.net/;SharedAccessKeyName=Admin;SharedAccessKey=8ZCc0FfKjz9tjj42RFO1NoJmwHvj55tDn/dbMmqAylQ=";
+            // const string QueueNameToCallbackBus = "messagequeue";
+            // // Skickar ett meddelande till servicebus queue - Skapa ny connection 
+            // var queueClientToCallbackBus = new QueueClient(ServiceBusConnectionStringToCallbackBus, QueueNameToCallbackBus);
 
-            Console.WriteLine("Sending message to CallbackServicebus");
-            var body = Encoding.UTF8.GetBytes(messageText);
-            var message = new Message(body);
-            await queueClientToCallbackBus.SendAsync(message);
-            Console.WriteLine("Sent message");
+            // Console.WriteLine("Sending message to CallbackServicebus");
+            // var body = Encoding.UTF8.GetBytes(messageText);
+            // var message = new Message(body);
+            // await queueClientToCallbackBus.SendAsync(message);
+            // Console.WriteLine("Sent message");
 
-            // int num = Convert.ToInt16(messageText);
+            //int num = Convert.ToInt16(messageText);
             // // Skickar ett meddelande till servicebus queue
             // await createMessages(new String(num + 4));
             await Task.CompletedTask;

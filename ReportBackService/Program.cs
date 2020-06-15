@@ -18,13 +18,15 @@ namespace FirstApp.PlusFourService
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             // Recieve Message from ServiceBus
-            listenToMessages();
+            await listenToMessages();
         }
 
-        static void listenToMessages()
+        static async Task listenToMessages()
         {
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
             queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
+
+            await Task.CompletedTask;
         }
 
         static async Task OnMessage(Message m, CancellationToken ct)

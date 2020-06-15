@@ -106,11 +106,6 @@ namespace FirstApp.PlusFourAPIDemo.Controllers
 
             await queueClient.SendAsync(message);
 
-            // return new JsonResult(
-            //     new List<object>() {
-            //         new { Id = 1, Message = "First chatmessage" }
-            //     });
-
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
