@@ -23,18 +23,8 @@ namespace FirstApp.PlusFourService
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
             queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
 
-
             Thread.Sleep(Timeout.Infinite);
-            //Console.ReadKey();
         }
-
-        // static async Task listenToMessages()
-        // {
-        //     var messageHandlerOptions = new MessageHandlerOptions(OnException);
-        //     queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
-
-        //     await Task.CompletedTask;
-        // }
 
         static async Task OnMessage(Message m, CancellationToken ct)
         {
@@ -43,7 +33,7 @@ namespace FirstApp.PlusFourService
             Console.WriteLine(messageText);
             Console.WriteLine($"Enqueued at {m.SystemProperties.EnqueuedTimeUtc}");
 
-            // TODO: Post to http://functions/api/callback
+            // HttpPost with message data
             await PostAsync(messageText);
 
             await Task.CompletedTask;
@@ -57,6 +47,7 @@ namespace FirstApp.PlusFourService
             return Task.CompletedTask;
         }
 
+        // HttpPost
         static async Task PostAsync(string data)
         {
             string postUrl = "http://functions/api/callback";
@@ -68,7 +59,7 @@ namespace FirstApp.PlusFourService
 
             string content = await response.Content.ReadAsStringAsync();
             await Task.Run(() => JsonConvert.SerializeObject(content));
-            // return await Task.Run(() => JsonObject.Parse(content));
+
             await Task.CompletedTask;
         }
     }

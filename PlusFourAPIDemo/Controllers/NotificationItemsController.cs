@@ -55,44 +55,20 @@ namespace FirstApp.PlusFourAPIDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<NotificationItem>> PostNotificationItem(NotificationItem notificationItem)
         {
-
+            // Setting an Guid ID to message
             string id = Guid.NewGuid().ToString();
-
-            Console.WriteLine(id);
-
             notificationItem.Id = id;
 
+            // Sending message to servicebus
             string messageBody = JsonConvert.SerializeObject(notificationItem);
-
             Message message = new Message(Encoding.UTF8.GetBytes(messageBody));
-            //Skickar ett meddelande till servicebus queue
             await queueClient.SendAsync(message);
 
             _context.NotificationItems.Add(notificationItem);
             await _context.SaveChangesAsync();
 
+            // Skapar item vid anropet
             return CreatedAtAction(nameof(GetNotificationItem), new { id = id }, notificationItem);
-
-        }
-
-        internal sealed class FormatNumbersAsTextConverter : JsonConverter
-        {
-            public override bool CanRead => false;
-            public override bool CanWrite => true;
-            public override bool CanConvert(Type type) => type == typeof(long);
-
-            public override void WriteJson(
-                JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                long number = (long)value;
-                writer.WriteValue(number.ToString(CultureInfo.InvariantCulture));
-            }
-
-            public override object ReadJson(
-                JsonReader reader, Type type, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotSupportedException();
-            }
         }
     }
 }
