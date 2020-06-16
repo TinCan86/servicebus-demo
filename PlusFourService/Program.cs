@@ -12,11 +12,18 @@ namespace FirstApp.PlusFourService
     {
         const string ServiceBusConnectionString = "Endpoint=sb://workshop-test.servicebus.windows.net/;SharedAccessKeyName=Admin;SharedAccessKey=8ZCc0FfKjz9tjj42RFO1NoJmwHvj55tDn/dbMmqAylQ=";
         const string QueueName = "newmessagequeue";
+
+
+        const string ServiceBusConnectionStringToCallbackBus = "Endpoint=sb://workshop-test-sb2.servicebus.windows.net/;SharedAccessKeyName=Full;SharedAccessKey=G2aRWZwLBHZipgkbEaeOQURDH2QJLzygEPssmhGOSJE=";
+        const string QueueNameToCallbackBus = "messagequeue";
         static IQueueClient queueClient;
+        static IQueueClient queueClientCallback;
 
         static async Task Main(string[] args)
         {
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            // // Skickar ett meddelande till servicebus queue - Skapa ny connection 
+            queueClientCallback = new QueueClient(ServiceBusConnectionStringToCallbackBus, QueueNameToCallbackBus);
 
             // Recieve Message from ServiceBus
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
@@ -28,11 +35,6 @@ namespace FirstApp.PlusFourService
 
         static async Task sendMessage(string messageText)
         {
-            const string ServiceBusConnectionStringToCallbackBus = "Endpoint=sb://workshop-test-sb2.servicebus.windows.net/;SharedAccessKeyName=Full;SharedAccessKey=G2aRWZwLBHZipgkbEaeOQURDH2QJLzygEPssmhGOSJE=";
-            const string QueueNameToCallbackBus = "messagequeue";
-            // // Skickar ett meddelande till servicebus queue - Skapa ny connection 
-            var queueClientToCallbackBus = new QueueClient(ServiceBusConnectionStringToCallbackBus, QueueNameToCallbackBus);
-
             // Skickar ett meddelande till servicebus queue
             //queueClient = new QueueClient(ServiceBusConnectionStringToCallbackBus, QueueNameToCallbackBus);
             // var body = Encoding.UTF8.GetBytes(messageText);
@@ -43,13 +45,12 @@ namespace FirstApp.PlusFourService
             // Console.WriteLine("Sent message to ServiceBus2");
 
             // JSON test
-            Console.WriteLine("Starting to send message to ServiceBus2");
-            string messageBody = JsonConvert.SerializeObject(messageText);
-            Console.WriteLine(messageBody);
-            Message message = new Message(Encoding.UTF8.GetBytes(messageBody));
 
-            await queueClientToCallbackBus.SendAsync(message);
-            Console.WriteLine("Sent message to ServiceBus2");
+            // string messageBody = JsonConvert.SerializeObject(messageText);
+            Console.WriteLine("Starting to send message to ServiceBus2");
+            Message message = new Message(Encoding.UTF8.GetBytes(messageText));
+            await queueClientCallback.SendAsync(message);
+            Console.WriteLine("Finished sending message to ServiceBus2");
 
             await Task.CompletedTask;
         }

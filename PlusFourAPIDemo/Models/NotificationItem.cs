@@ -16,8 +16,7 @@ namespace NotificationApi.Models
 
 public class NotificationItem
 {
-    [Key]
-    public long Id { get; set; }
+    public string Id { get; set; }
     public string Name { get; set; }
     public string Message { get; set; }
 }
