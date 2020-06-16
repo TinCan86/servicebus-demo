@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Models;
+using NotificationApi.Models;
 
 namespace FirstApp.PlusFourAPIDemo
 {
@@ -27,8 +27,8 @@ namespace FirstApp.PlusFourAPIDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TodoContext>(opt =>
-               opt.UseInMemoryDatabase("TodoList"));
+            services.AddDbContext<NotificationContext>(opt =>
+               opt.UseInMemoryDatabase("NotificationList"));
             services.AddControllers();
         }
 

@@ -21,9 +21,9 @@ namespace FirstApp.PlusFourService
             // Recieve Message from ServiceBus
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
             queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
-            Console.ReadKey();
             // await listenToMessages();
 
+            Thread.Sleep(Timeout.Infinite);
         }
 
         static async Task sendMessage(string messageText)
@@ -67,7 +67,8 @@ namespace FirstApp.PlusFourService
 
             // var obj = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(m.Body));
             // Console.WriteLine("JSON object: ", obj);
-            // string messageBody = JsonConvert.DeserializeObject(m);
+            // string messageBody = JsonConvert.DeserializeObject(m.Body);
+
             string messageText = Encoding.UTF8.GetString(m.Body);
             Console.WriteLine("Got a message:");
             Console.WriteLine(messageText);

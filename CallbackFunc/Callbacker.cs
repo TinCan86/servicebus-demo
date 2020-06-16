@@ -14,7 +14,7 @@ namespace CallbackFunc
     {
         [FunctionName("Callbacker")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "callback")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "callback")] HttpRequest req,
             ILogger log)
         {
 

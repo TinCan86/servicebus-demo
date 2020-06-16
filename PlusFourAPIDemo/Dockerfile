@@ -11,7 +11,7 @@ COPY ./ ./
 RUN dotnet build
 RUN dotnet publish -c Release
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
 WORKDIR /app
 

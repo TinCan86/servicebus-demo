@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,8 +11,8 @@ namespace FirstApp.PlusFourService
 {
     class Program
     {
-        const string ServiceBusConnectionString = "Endpoint=sb://workshop-test.servicebus.windows.net/;SharedAccessKeyName=Admin;SharedAccessKey=8ZCc0FfKjz9tjj42RFO1NoJmwHvj55tDn/dbMmqAylQ=";
-        const string QueueName = "newmessagequeue";
+        const string ServiceBusConnectionString = "Endpoint=sb://workshop-test-sb2.servicebus.windows.net/;SharedAccessKeyName=Full;SharedAccessKey=G2aRWZwLBHZipgkbEaeOQURDH2QJLzygEPssmhGOSJE=";
+        const string QueueName = "messagequeue";
         static IQueueClient queueClient;
 
         static async Task Main(string[] args)
@@ -18,16 +20,21 @@ namespace FirstApp.PlusFourService
             queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             // Recieve Message from ServiceBus
-            await listenToMessages();
-        }
-
-        static async Task listenToMessages()
-        {
             var messageHandlerOptions = new MessageHandlerOptions(OnException);
             queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
 
-            await Task.CompletedTask;
+
+            Thread.Sleep(Timeout.Infinite);
+            //Console.ReadKey();
         }
+
+        // static async Task listenToMessages()
+        // {
+        //     var messageHandlerOptions = new MessageHandlerOptions(OnException);
+        //     queueClient.RegisterMessageHandler(OnMessage, messageHandlerOptions);
+
+        //     await Task.CompletedTask;
+        // }
 
         static async Task OnMessage(Message m, CancellationToken ct)
         {
@@ -37,6 +44,7 @@ namespace FirstApp.PlusFourService
             Console.WriteLine($"Enqueued at {m.SystemProperties.EnqueuedTimeUtc}");
 
             // TODO: Post to http://functions/api/callback
+            await PostAsync(messageText);
 
             await Task.CompletedTask;
         }
@@ -47,6 +55,21 @@ namespace FirstApp.PlusFourService
             Console.WriteLine(args.Exception.Message);
             Console.WriteLine(args.ExceptionReceivedContext.ToString());
             return Task.CompletedTask;
+        }
+
+        static async Task PostAsync(string data)
+        {
+            string postUrl = "http://functions/api/callback";
+
+            var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync(postUrl, new StringContent(data));
+
+            response.EnsureSuccessStatusCode();
+
+            string content = await response.Content.ReadAsStringAsync();
+            await Task.Run(() => JsonConvert.SerializeObject(content));
+            // return await Task.Run(() => JsonObject.Parse(content));
+            await Task.CompletedTask;
         }
     }
 }
